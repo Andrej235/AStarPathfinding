@@ -10,6 +10,7 @@ namespace BechmarkingPathfinding.PathFinding
         public Grid<PathNode> Grid { get; }
         private List<PathNode> openList = [];
         private List<PathNode> closedList = [];
+        public static List<PathNode> testing = [];
 
         public Pathfinding(int width, int height)
         {
@@ -40,6 +41,8 @@ namespace BechmarkingPathfinding.PathFinding
                     pathNode.gCost = int.MaxValue;
                     pathNode.CalculateFCost();
                     pathNode.cameFromNode = null;
+
+                    testing.Add(pathNode);
                 }
             }
 
@@ -47,6 +50,7 @@ namespace BechmarkingPathfinding.PathFinding
             startNode.hCost = CalculateDistanceCost(startNode, endNode);
             startNode.CalculateFCost();
 
+            return [];
             while (openList.Count > 0)
             {
                 PathNode currentNode = GetLowestFCostNode(openList);

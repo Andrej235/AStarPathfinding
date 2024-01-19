@@ -1,8 +1,11 @@
-﻿using BechmarkingPathfinding.PathFinding;
+﻿using BechmarkingPathfinding.BST;
+using BechmarkingPathfinding.PathFinding;
 using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Diagnosers;
 using BenchmarkDotNet.Engines;
 using BenchmarkDotNet.Running;
+using System.ComponentModel.Design.Serialization;
+using System.Diagnostics;
 
 namespace BechmarkingPathfinding
 {
@@ -10,17 +13,98 @@ namespace BechmarkingPathfinding
     {
         static void Main()
         {
-            //new Bench().FindPath_Edge();
-            BenchmarkRunner.Run<Bench>();
-        }
+            Console.WriteLine(Pathfinding.testing.Count);
 
+            /*            var a = new BSTBench();
+                        a.GetLowestFCostNode_Iteration();
+                        a.GetLowestFCostNode_BST();*/
+
+            //new Bench().FindPath_Edge();
+            BenchmarkRunner.Run<BSTBench>();
+            /*            var a = new BSTBench();
+                        a.GetLowestFCostNode_Iteration();
+                        a.GetLowestFCostNode_BST();*/
+        }
     }
 
     [MemoryDiagnoser]
-    public class Bench
+    public class BSTBench
     {
-        private static Pathfinding pathfinding = new(50, 50);
-        Consumer consumer = new();
+        //private readonly List<int> vals;
+        public BSTBench()
+        {
+            /*            vals = [];
+                        for (int i = 0; i < 100; i++)
+                            vals.Add(Random.Shared.Next(0, 1000));
+
+                        bstRoot = BinarySearchTree.Insert(bstRoot, vals[0]);
+                        for (int i = 1; i < vals.Count; i++)
+                            bstRoot = BinarySearchTree.Insert(bstRoot, vals[i]);*/
+
+            //BinarySearchTree.Inorder(bstRoot);
+
+            //Next step
+            //Asign pathNodes and bstPathNodeRoot and test the 2 functions
+
+            Pathfinding pathfinding = new(50, 50);
+            pathfinding.FindPath(0, 15, 49, 49);
+
+            pathNodes = Pathfinding.testing;
+
+            bstPathNodeRoot = BinarySearchTreePathNode.Insert(bstPathNodeRoot, pathNodes[0]);
+            for (int i = 1; i < pathNodes.Count; i++)
+                bstPathNodeRoot = BinarySearchTreePathNode.Insert(bstPathNodeRoot, pathNodes[i]);
+        }
+
+        readonly Consumer consumer = new();
+        //private readonly TreeNode bstRoot;
+        public List<PathNode> pathNodes;
+        public TreePathNode bstPathNodeRoot;
+
+        /*        //[Benchmark]
+                public void GetLowestFCostNode_Iteration_Int()
+                {
+                    int min = vals[0];
+                    for (int i = 1; i < vals.Count; i++)
+                    {
+                        if (vals[i] < min)
+                            min = vals[i];
+                    }
+                    consumer.Consume(min);
+                }
+
+                //[Benchmark]
+                public void GetLowestFCostNode_BST_Int()
+                {
+                    var a = BinarySearchTree.MinValueNode(bstRoot).val;
+                    consumer.Consume(a);
+                }*/
+
+        [Benchmark]
+        public void GetLowestFCostNode_Iteration()
+        {
+            PathNode lowestFCostNode = pathNodes[0];
+            for (int i = 1; i < pathNodes.Count; i++)
+            {
+                if (pathNodes[i].fCost < lowestFCostNode.fCost)
+                    lowestFCostNode = pathNodes[i];
+            }
+            consumer.Consume(lowestFCostNode);
+        }
+
+        [Benchmark]
+        public void GetLowestFCostNode_BST()
+        {
+            var a = BinarySearchTreePathNode.MinValueNode(bstPathNodeRoot).val;
+            consumer.Consume(a);
+        }
+    }
+
+    [MemoryDiagnoser]
+    public class PathfindingBench
+    {
+        private static readonly Pathfinding pathfinding = new(50, 50);
+        readonly Consumer consumer = new();
 
         [Benchmark]
         public void FindPath_Edge() => pathfinding.FindPath(0, 0, 49, 49)?.Consume(consumer);
