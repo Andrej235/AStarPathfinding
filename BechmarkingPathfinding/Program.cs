@@ -1,169 +1,75 @@
-﻿using BechmarkingPathfinding.BST;
-using BechmarkingPathfinding.PathFinding;
+﻿using BechmarkingPathfinding.PathFinding;
 using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Diagnosers;
 using BenchmarkDotNet.Engines;
 using BenchmarkDotNet.Running;
-using System.ComponentModel.Design.Serialization;
-using System.Diagnostics;
+using System.Text.Json;
 
 namespace BechmarkingPathfinding
 {
     internal class Program
     {
+        public static PQPathfinding PQPathfinding { get; set; } = null!;
+        public static Pathfinding Pathfinding { get; set; } = null!;
+
         static void Main()
         {
-/*            BSTBench bstBench = new BSTBench();
-            bstBench.GetPath_Iterative_Set();
-            bstBench.GetPath_BST_Set();*/
+            PQPathfinding = new(50, 50);
+            Pathfinding = new(50, 50);
 
-            /*            var a = new BSTBench();
-                        a.GetLowestFCostNode_Iteration();
-                        a.GetLowestFCostNode_BST();*/
+            //PrioityQueueBenchmark benchmark = new PrioityQueueBenchmark();
+            BenchmarkRunner.Run<PrioityQueueBenchmark>();
 
-            //new Bench().FindPath_Edge();
-            BenchmarkRunner.Run<BSTBench>();
-            /*            var a = new BSTBench();
-                        a.GetLowestFCostNode_Iteration();
-                        a.GetLowestFCostNode_BST();*/
+            /*            for (int i = 0; i < 50; i++)
+                            Console.WriteLine(Test(benchmark, Random.Shared.Next(0, 50), Random.Shared.Next(0, 50)));*/
+        }
+
+        public static bool Test(PrioityQueueBenchmark benchmark, int x, int y)
+        {
+            var q = PQPathfinding.FindPath(0, 0, x, y);
+            var n = Pathfinding.FindPath(0, 0, x, y);
+
+            var qJ = JsonSerializer.Serialize(q);
+            var nJ = JsonSerializer.Serialize(n);
+            return qJ == nJ;
         }
     }
 
     [MemoryDiagnoser]
-    public class BSTBench
+    public class PrioityQueueBenchmark
     {
-        //private readonly List<int> vals;
-        public BSTBench()
+        PQPathfinding pqPathfinding;
+        Pathfinding pathfinding;
+
+        public PrioityQueueBenchmark()
         {
-            /*            vals = [];
-                        for (int i = 0; i < 100; i++)
-                            vals.Add(Random.Shared.Next(0, 1000));
-
-                        bstRoot = BinarySearchTree.Insert(bstRoot, vals[0]);
-                        for (int i = 1; i < vals.Count; i++)
-                            bstRoot = BinarySearchTree.Insert(bstRoot, vals[i]);*/
-
-            //BinarySearchTree.Inorder(bstRoot);
-
-            //Next step
-            //Asign pathNodes and bstPathNodeRoot and test the 2 functions
-
-            /*            Pathfinding pathfinding = new(50, 50);
-                        pathfinding.FindPath(0, 15, 49, 49);
-
-                        pathNodes = Pathfinding.testing;
-
-                        bstPathNodeRoot = BinarySearchTreePathNode.Insert(bstPathNodeRoot, pathNodes[0]);
-                        for (int i = 1; i < pathNodes.Count; i++)
-                            bstPathNodeRoot = BinarySearchTreePathNode.Insert(bstPathNodeRoot, pathNodes[i]);*/
-
-            pathfinding_Iterative = new(50, 50);
-            pathfinding_BST = new(50, 50);
-        }
-
-        Pathfinding pathfinding_Iterative;
-        BSTPathfinding pathfinding_BST;
-
-        readonly Consumer consumer = new();
-        //private readonly TreeNode bstRoot;
-        //public List<PathNode> pathNodes;
-        //public TreePathNode bstPathNodeRoot;
-
-        /*        //[Benchmark]
-                public void GetLowestFCostNode_Iteration_Int()
-                {
-                    int min = vals[0];
-                    for (int i = 1; i < vals.Count; i++)
-                    {
-                        if (vals[i] < min)
-                            min = vals[i];
-                    }
-                    consumer.Consume(min);
-                }
-
-                //[Benchmark]
-                public void GetLowestFCostNode_BST_Int()
-                {
-                    var a = BinarySearchTree.MinValueNode(bstRoot).val;
-                    consumer.Consume(a);
-                }*/
-
-        /*        [Benchmark]
-                public void GetLowestFCostNode_Iteration()
-                {
-                    PathNode lowestFCostNode = pathNodes[0];
-                    for (int i = 1; i < pathNodes.Count; i++)
-                    {
-                        if (pathNodes[i].fCost < lowestFCostNode.fCost)
-                            lowestFCostNode = pathNodes[i];
-                    }
-                    consumer.Consume(lowestFCostNode);
-                }
-
-                [Benchmark]
-                public void GetLowestFCostNode_BST()
-                {
-                    var a = BinarySearchTreePathNode.MinValueNode(bstPathNodeRoot).val;
-                    consumer.Consume(a);
-                }*/
-
-        [Benchmark]
-        public void GetPath_Iterative_Corner()
-        {
-            var res = pathfinding_Iterative.FindPath(0, 0, 49, 49);
-            res?.Consume(consumer);
+            pqPathfinding = new(50, 50);
+            pathfinding = new(50, 50);
         }
 
         [Benchmark]
-        public void GetPath_BST_Corner()
+        public void Queue()
         {
-            var res = pathfinding_BST.FindPath(0, 0, 49, 49);
-            res?.Consume(consumer);
+            pqPathfinding.FindPath(0, 0, 44, 40);
         }
 
         [Benchmark]
-        public void GetPath_Iterative_Set()
+        public void Normal()
         {
-            var res = pathfinding_Iterative.FindPath(0, 0, 26, 48);
-            res?.Consume(consumer);
+            pathfinding.FindPath(0, 0, 44, 40);
         }
 
         [Benchmark]
-        public void GetPath_BST_Set()
+        public void Queue_Random()
         {
-            var res = pathfinding_BST.FindPath(0, 0, 26, 48);
-            res?.Consume(consumer);
+            pqPathfinding.FindPath(0, 0, Random.Shared.Next(0, 50), Random.Shared.Next(0, 50));
         }
 
         [Benchmark]
-        public void GetPath_Iterative_Random()
+        public void Normal_Random()
         {
-            var res = pathfinding_Iterative.FindPath(0, 0, Random.Shared.Next(0, 50), Random.Shared.Next(0, 50));
-            res?.Consume(consumer);
+            pathfinding.FindPath(0, 0, Random.Shared.Next(0, 50), Random.Shared.Next(0, 50));
         }
-
-        [Benchmark]
-        public void GetPath_BST_Random()
-        {
-            var res = pathfinding_BST.FindPath(0, 0, Random.Shared.Next(0, 50), Random.Shared.Next(0, 50));
-            res?.Consume(consumer);
-        }
-    }
-
-    [MemoryDiagnoser]
-    public class PathfindingBench
-    {
-        private static readonly Pathfinding pathfinding = new(50, 50);
-        readonly Consumer consumer = new();
-
-        [Benchmark]
-        public void FindPath_Edge() => pathfinding.FindPath(0, 0, 49, 49)?.Consume(consumer);
-
-        [Benchmark]
-        public void FindPath_Set() => pathfinding.FindPath(0, 0, 35, 27)?.Consume(consumer);
-
-        [Benchmark]
-        public void FindPath_Random() => pathfinding.FindPath(0, 0, Random.Shared.Next(0, 50), Random.Shared.Next(0, 50))?.Consume(consumer);
     }
 }
 /*
@@ -179,11 +85,22 @@ namespace BechmarkingPathfinding
 ********************************************************************************
 
 After precalculating neighbours
-******************************   RESULTS   *******************************
+*****************************   RESULTS   ********************************
 | Method          | Mean      | Error    | StdDev   | Gen0   | Allocated |
 |---------------- |----------:|---------:|---------:|-------:|----------:|
 | FindPath_Edge   |  56.30 us | 1.114 us | 0.987 us | 1.0376 |   6.44 KB |
 | FindPath_Set    | 269.59 us | 0.529 us | 0.442 us | 0.9766 |   7.46 KB |
 | FindPath_Random | 307.87 us | 5.708 us | 5.339 us | 0.9766 |   8.24 KB |
 **************************************************************************
+
+Normal - using iteration for finding the lowest fCost
+Queue - uses PriorityQueue<> for openList and finding the lowest fCost
+****************************   RESULTS   *******************************
+| Method        | Mean      | Error    | StdDev   | Gen0   | Allocated |
+|-------------- |----------:|---------:|---------:|-------:|----------:|
+| Queue         |  66.37 us | 0.905 us | 0.803 us | 1.8311 |  11.41 KB |
+| Normal        | 216.02 us | 0.535 us | 0.500 us | 1.4648 |   9.45 KB |
+| Queue_Random  | 138.55 us | 2.266 us | 1.892 us | 1.9531 |  12.44 KB |
+| Normal_Random | 309.28 us | 3.781 us | 3.352 us | 0.9766 |    8.3 KB |
+*************************************************************************
  */
