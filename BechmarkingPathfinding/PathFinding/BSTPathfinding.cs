@@ -1,6 +1,8 @@
+using BechmarkingPathfinding.BST;
+
 namespace BechmarkingPathfinding.PathFinding
 {
-    public class Pathfinding
+    public class BSTPathfinding
     {
         private const int MOVE_STRAIGHT_COST = 10;
         private const int MOVE_DIAGONAL_COST = 14;
@@ -9,7 +11,9 @@ namespace BechmarkingPathfinding.PathFinding
         private List<PathNode> openList = [];
         private List<PathNode> closedList = [];
 
-        public Pathfinding(int width, int height)
+        public TreePathNode? bstRoot;
+
+        public BSTPathfinding(int width, int height)
         {
             Grid = new(width, height, 10, (grid, x, y) => new PathNode(x, y));
 
@@ -44,6 +48,7 @@ namespace BechmarkingPathfinding.PathFinding
             startNode.gCost = 0;
             startNode.hCost = CalculateDistanceCost(startNode, endNode);
             startNode.CalculateFCost();
+            BinarySearchTreePathNode.Insert(bstRoot, startNode);
 
             while (openList.Count > 0)
             {
@@ -66,6 +71,7 @@ namespace BechmarkingPathfinding.PathFinding
                         neighbourNode.gCost = tentativeGCost;
                         neighbourNode.hCost = CalculateDistanceCost(neighbourNode, endNode);
                         neighbourNode.CalculateFCost();
+                        BinarySearchTreePathNode.Insert(bstRoot, neighbourNode);
 
                         if (!openList.Contains(neighbourNode))
                             openList.Add(neighbourNode);

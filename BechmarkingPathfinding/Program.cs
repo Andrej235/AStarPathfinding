@@ -13,7 +13,9 @@ namespace BechmarkingPathfinding
     {
         static void Main()
         {
-            Console.WriteLine(Pathfinding.testing.Count);
+/*            BSTBench bstBench = new BSTBench();
+            bstBench.GetPath_Iterative_Set();
+            bstBench.GetPath_BST_Set();*/
 
             /*            var a = new BSTBench();
                         a.GetLowestFCostNode_Iteration();
@@ -46,20 +48,26 @@ namespace BechmarkingPathfinding
             //Next step
             //Asign pathNodes and bstPathNodeRoot and test the 2 functions
 
-            Pathfinding pathfinding = new(50, 50);
-            pathfinding.FindPath(0, 15, 49, 49);
+            /*            Pathfinding pathfinding = new(50, 50);
+                        pathfinding.FindPath(0, 15, 49, 49);
 
-            pathNodes = Pathfinding.testing;
+                        pathNodes = Pathfinding.testing;
 
-            bstPathNodeRoot = BinarySearchTreePathNode.Insert(bstPathNodeRoot, pathNodes[0]);
-            for (int i = 1; i < pathNodes.Count; i++)
-                bstPathNodeRoot = BinarySearchTreePathNode.Insert(bstPathNodeRoot, pathNodes[i]);
+                        bstPathNodeRoot = BinarySearchTreePathNode.Insert(bstPathNodeRoot, pathNodes[0]);
+                        for (int i = 1; i < pathNodes.Count; i++)
+                            bstPathNodeRoot = BinarySearchTreePathNode.Insert(bstPathNodeRoot, pathNodes[i]);*/
+
+            pathfinding_Iterative = new(50, 50);
+            pathfinding_BST = new(50, 50);
         }
+
+        Pathfinding pathfinding_Iterative;
+        BSTPathfinding pathfinding_BST;
 
         readonly Consumer consumer = new();
         //private readonly TreeNode bstRoot;
-        public List<PathNode> pathNodes;
-        public TreePathNode bstPathNodeRoot;
+        //public List<PathNode> pathNodes;
+        //public TreePathNode bstPathNodeRoot;
 
         /*        //[Benchmark]
                 public void GetLowestFCostNode_Iteration_Int()
@@ -80,23 +88,65 @@ namespace BechmarkingPathfinding
                     consumer.Consume(a);
                 }*/
 
+        /*        [Benchmark]
+                public void GetLowestFCostNode_Iteration()
+                {
+                    PathNode lowestFCostNode = pathNodes[0];
+                    for (int i = 1; i < pathNodes.Count; i++)
+                    {
+                        if (pathNodes[i].fCost < lowestFCostNode.fCost)
+                            lowestFCostNode = pathNodes[i];
+                    }
+                    consumer.Consume(lowestFCostNode);
+                }
+
+                [Benchmark]
+                public void GetLowestFCostNode_BST()
+                {
+                    var a = BinarySearchTreePathNode.MinValueNode(bstPathNodeRoot).val;
+                    consumer.Consume(a);
+                }*/
+
         [Benchmark]
-        public void GetLowestFCostNode_Iteration()
+        public void GetPath_Iterative_Corner()
         {
-            PathNode lowestFCostNode = pathNodes[0];
-            for (int i = 1; i < pathNodes.Count; i++)
-            {
-                if (pathNodes[i].fCost < lowestFCostNode.fCost)
-                    lowestFCostNode = pathNodes[i];
-            }
-            consumer.Consume(lowestFCostNode);
+            var res = pathfinding_Iterative.FindPath(0, 0, 49, 49);
+            res?.Consume(consumer);
         }
 
         [Benchmark]
-        public void GetLowestFCostNode_BST()
+        public void GetPath_BST_Corner()
         {
-            var a = BinarySearchTreePathNode.MinValueNode(bstPathNodeRoot).val;
-            consumer.Consume(a);
+            var res = pathfinding_BST.FindPath(0, 0, 49, 49);
+            res?.Consume(consumer);
+        }
+
+        [Benchmark]
+        public void GetPath_Iterative_Set()
+        {
+            var res = pathfinding_Iterative.FindPath(0, 0, 26, 48);
+            res?.Consume(consumer);
+        }
+
+        [Benchmark]
+        public void GetPath_BST_Set()
+        {
+            var res = pathfinding_BST.FindPath(0, 0, 26, 48);
+            res?.Consume(consumer);
+        }
+
+        [Benchmark]
+        public void GetPath_Iterative_Random()
+        {
+            var res = pathfinding_Iterative.FindPath(0, 0, Random.Shared.Next(0, 50), Random.Shared.Next(0, 50));
+            res?.Consume(consumer);
+        }
+
+        [Benchmark]
+        public void GetPath_BST_Random()
+        {
+            var res = pathfinding_BST.FindPath(0, 0, Random.Shared.Next(0, 50), Random.Shared.Next(0, 50));
+            res?.Consume(consumer);
         }
     }
 
