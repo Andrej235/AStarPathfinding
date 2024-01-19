@@ -1,3 +1,5 @@
+using System;
+
 namespace BechmarkingPathfinding.PathFinding
 {
     public class Pathfinding
@@ -12,6 +14,14 @@ namespace BechmarkingPathfinding.PathFinding
         public Pathfinding(int width, int height)
         {
             Grid = new(width, height, 10, (grid, x, y) => new PathNode(x, y));
+
+            for (int x = 0; x < Grid.Width; x++)
+            {
+                for (int y = 0; y < Grid.Height; y++)
+                {
+                    Grid[x, y].neighbours = GetNeighbourList(Grid[x, y]);
+                }
+            }
         }
 
         public List<PathNode>? FindPath(int startX, int startY, int endX, int endY)
@@ -46,7 +56,7 @@ namespace BechmarkingPathfinding.PathFinding
                 openList.Remove(currentNode);
                 closedList.Add(currentNode);
 
-                foreach (var neighbourNode in GetNeighbourList(currentNode))
+                foreach (var neighbourNode in currentNode.neighbours)
                 {
                     if (closedList.Contains(neighbourNode))
                         continue;
@@ -58,58 +68,6 @@ namespace BechmarkingPathfinding.PathFinding
                         neighbourNode.gCost = tentativeGCost;
                         neighbourNode.hCost = CalculateDistanceCost(neighbourNode, endNode);
                         neighbourNode.CalculateFCost();
-
-                        if (!openList.Contains(neighbourNode))
-                            openList.Add(neighbourNode);
-                    }
-                }
-            }
-
-            //Couldn't find a path
-            return null;
-        }
-
-        public List<PathNode>? FindPath_FProp(int startX, int startY, int endX, int endY)
-        {
-            PathNode startNode = Grid[startX, startY];
-            PathNode endNode = Grid[endX, endY];
-
-            openList = new() { startNode };
-            closedList = new();
-
-            for (int x = 0; x < Grid.Width; x++)
-            {
-                for (int y = 0; y < Grid.Height; y++)
-                {
-                    PathNode pathNode = Grid[x, y];
-                    pathNode.gCost = int.MaxValue;
-                    pathNode.cameFromNode = null;
-                }
-            }
-
-            startNode.gCost = 0;
-            startNode.hCost = CalculateDistanceCost(startNode, endNode);
-
-            while (openList.Count > 0)
-            {
-                PathNode currentNode = GetLowestFCostNode_FProp(openList);
-                if (currentNode == endNode)
-                    return CalculatePath(endNode);
-
-                openList.Remove(currentNode);
-                closedList.Add(currentNode);
-
-                foreach (var neighbourNode in GetNeighbourList(currentNode))
-                {
-                    if (closedList.Contains(neighbourNode))
-                        continue;
-
-                    int tentativeGCost = currentNode.gCost + CalculateDistanceCost(currentNode, neighbourNode); //CalculateDistanceCost returns 10 or 14
-                    if (tentativeGCost < neighbourNode.gCost)
-                    {
-                        neighbourNode.cameFromNode = currentNode;
-                        neighbourNode.gCost = tentativeGCost;
-                        neighbourNode.hCost = CalculateDistanceCost(neighbourNode, endNode);
 
                         if (!openList.Contains(neighbourNode))
                             openList.Add(neighbourNode);
@@ -183,17 +141,6 @@ namespace BechmarkingPathfinding.PathFinding
             for (int i = 1; i < pathNodes.Count; i++)
             {
                 if (pathNodes[i].fCost < lowestFCostNode.fCost)
-                    lowestFCostNode = pathNodes[i];
-            }
-            return lowestFCostNode;
-        }
-
-        private PathNode GetLowestFCostNode_FProp(List<PathNode> pathNodes)
-        {
-            PathNode lowestFCostNode = pathNodes[0];
-            for (int i = 1; i < pathNodes.Count; i++)
-            {
-                if (pathNodes[i].FCost < lowestFCostNode.FCost)
                     lowestFCostNode = pathNodes[i];
             }
             return lowestFCostNode;

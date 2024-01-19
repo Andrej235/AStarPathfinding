@@ -1,3 +1,5 @@
+using System;
+
 namespace BechmarkingPathfinding.PathFinding
 {
     public class PathNode
@@ -8,14 +10,15 @@ namespace BechmarkingPathfinding.PathFinding
         public int gCost;
         public int hCost;
         public int fCost;
-        public int FCost => gCost + hCost;
 
+        public List<PathNode> neighbours;
         public PathNode? cameFromNode;
 
         public PathNode(int x, int y)
         {
             this.x = x;
             this.y = y;
+            neighbours = new();
         }
 
         public override string ToString() => $"{x},{y}";
