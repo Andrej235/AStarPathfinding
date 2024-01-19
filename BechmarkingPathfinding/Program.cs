@@ -40,6 +40,9 @@ namespace BechmarkingPathfinding
                 queueResults.Add(Test_Queue(xs[i], ys[i]));
                 hashSetResults.Add(Test_HashSet(xs[i], ys[i]));
             }
+
+            Console.WriteLine("Queue " + (!queueResults.Contains(false) ? "worked" : $"failed ({queueResults.Where(x => !x).Count()})"));
+            Console.WriteLine("Queue with HashSet " + (!hashSetResults.Contains(false) ? "worked" : $"failed ({hashSetResults.Where(x => !x).Count()})"));
         }
 
         public static bool Test_Queue(int x, int y)
@@ -116,7 +119,7 @@ namespace BechmarkingPathfinding
 }
 
 /*
- *********************************   RESULTS   *********************************
+*********************************   RESULTS   **********************************
 ********************************************************************************
 | Method                | Mean      | Error    | StdDev   | Gen0   | Allocated |
 |---------------------- |----------:|---------:|---------:|-------:|----------:|
@@ -148,6 +151,9 @@ Queue - uses PriorityQueue<> for openList and finding the lowest fCost
 | Normal_Random | 309.28 us | 3.781 us | 3.352 us | 0.9766 |    8.3 KB |
 *************************************************************************
 
+Queue - uses PriorityQueue<> for openList and finding the lowest fCost
+Queue_WithHashSet - Queue + uses HasSet<> for closedList
+********************************************************************************************
 | Method                   | Mean      | Error    | StdDev   | Gen0   | Gen1   | Allocated |
 |------------------------- |----------:|---------:|---------:|-------:|-------:|----------:|
 | Queue                    |  67.09 us | 1.305 us | 1.697 us | 1.8311 |      - |  11.41 KB |

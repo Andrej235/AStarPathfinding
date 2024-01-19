@@ -14,13 +14,43 @@ namespace BechmarkingPathfinding.PathFinding
         {
             Grid = new(width, height, 10, (grid, x, y) => new PathNode(x, y));
 
-            for (int x = 0; x < Grid.Width; x++)
+            List<PathNode> GetNeighbourList(PathNode node)
             {
-                for (int y = 0; y < Grid.Height; y++)
+                List<PathNode> neighbours = new();
+
+                if (node.x - 1 >= 0) //Left
                 {
-                    Grid[x, y].neighbours = GetNeighbourList(Grid[x, y]);
+                    neighbours.Add(Grid[node.x - 1, node.y]);
+
+                    if (node.y - 1 >= 0) //Down
+                        neighbours.Add(Grid[node.x - 1, node.y - 1]);
+
+                    if (node.y + 1 < Grid.Height) //Up
+                        neighbours.Add(Grid[node.x - 1, node.y + 1]);
+
                 }
+                if (node.x + 1 < Grid.Width) //Right
+                {
+                    neighbours.Add(Grid[node.x + 1, node.y]);
+
+                    if (node.y - 1 >= 0) //Down
+                        neighbours.Add(Grid[node.x + 1, node.y - 1]);
+
+                    if (node.y + 1 < Grid.Height) //Up
+                        neighbours.Add(Grid[node.x + 1, node.y + 1]);
+                }
+
+                if (node.y - 1 >= 0) //Down
+                    neighbours.Add(Grid[node.x, node.y - 1]);
+
+                if (node.y + 1 < Grid.Height) //Up
+                    neighbours.Add(Grid[node.x, node.y + 1]);
+
+                return neighbours;
             }
+            for (int x = 0; x < Grid.Width; x++)
+                for (int y = 0; y < Grid.Height; y++)
+                    Grid[x, y].neighbours = GetNeighbourList(Grid[x, y]);
         }
 
         public List<PathNode>? FindPath(int startX, int startY, int endX, int endY)
@@ -35,7 +65,6 @@ namespace BechmarkingPathfinding.PathFinding
             {
                 for (int y = 0; y < Grid.Height; y++)
                 {
-                    //Make a more effiecient way to change these - every time Grid[x, y] is accessed it goes through 4 checks (ifs)
                     PathNode pathNode = Grid[x, y];
                     pathNode.gCost = int.MaxValue;
                     pathNode.CalculateFCost();
@@ -78,55 +107,19 @@ namespace BechmarkingPathfinding.PathFinding
             return null;
         }
 
-        private List<PathNode> GetNeighbourList(PathNode node)
+        private static List<PathNode> CalculatePath(PathNode node)
         {
-            List<PathNode> neighbours = new();
-
-            if (node.x - 1 >= 0) //Left
+            List<PathNode> path = new() { node };
+            while (node.cameFromNode != null)
             {
-                neighbours.Add(Grid[node.x - 1, node.y]);
-
-                if (node.y - 1 >= 0) //Down
-                    neighbours.Add(Grid[node.x - 1, node.y - 1]);
-
-                if (node.y + 1 < Grid.Height) //Up
-                    neighbours.Add(Grid[node.x - 1, node.y + 1]);
-
-            }
-            if (node.x + 1 < Grid.Width) //Right
-            {
-                neighbours.Add(Grid[node.x + 1, node.y]);
-
-                if (node.y - 1 >= 0) //Down
-                    neighbours.Add(Grid[node.x + 1, node.y - 1]);
-
-                if (node.y + 1 < Grid.Height) //Up
-                    neighbours.Add(Grid[node.x + 1, node.y + 1]);
-            }
-
-            if (node.y - 1 >= 0) //Down
-                neighbours.Add(Grid[node.x, node.y - 1]);
-
-            if (node.y + 1 < Grid.Height) //Up
-                neighbours.Add(Grid[node.x, node.y + 1]);
-
-            return neighbours;
-        }
-
-        private List<PathNode> CalculatePath(PathNode endNode)
-        {
-            List<PathNode> path = new() { endNode };
-            var currentNode = endNode;
-            while (currentNode.cameFromNode != null)
-            {
-                path.Add(currentNode.cameFromNode);
-                currentNode = currentNode.cameFromNode;
+                path.Add(node.cameFromNode);
+                node = node.cameFromNode;
             }
             path.Reverse();
             return path;
         }
 
-        private int CalculateDistanceCost(PathNode a, PathNode b)
+        private static int CalculateDistanceCost(PathNode a, PathNode b)
         {
             float xDistance = MathF.Abs(a.x - b.x);
             float yDistance = MathF.Abs(a.y - b.y);
