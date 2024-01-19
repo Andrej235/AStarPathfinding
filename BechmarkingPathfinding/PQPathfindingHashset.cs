@@ -1,6 +1,6 @@
 namespace BechmarkingPathfinding.PathFinding
 {
-    public class PQPathfinding
+    public class PQPathfindingHashset
     {
         private const int MOVE_STRAIGHT_COST = 10;
         private const int MOVE_DIAGONAL_COST = 14;
@@ -8,9 +8,9 @@ namespace BechmarkingPathfinding.PathFinding
         public PriorityQueue<PathNode, int> OpenListQueue { get; set; } = new();
 
         public Grid<PathNode> Grid { get; }
-        private List<PathNode> closedList = [];
+        private HashSet<PathNode> closedList = [];
 
-        public PQPathfinding(int width, int height)
+        public PQPathfindingHashset(int width, int height)
         {
             Grid = new(width, height, 10, (grid, x, y) => new PathNode(x, y));
 

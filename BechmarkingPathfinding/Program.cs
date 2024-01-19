@@ -9,29 +9,57 @@ namespace BechmarkingPathfinding
 {
     internal class Program
     {
-        public static PQPathfinding PQPathfinding { get; set; } = null!;
         public static Pathfinding Pathfinding { get; set; } = null!;
+        public static PQPathfinding PQPathfinding { get; set; } = null!;
+        public static PQPathfindingHashset PQPathfindingWithHashSet { get; set; } = null!;
 
         static void Main()
         {
             PQPathfinding = new(50, 50);
             Pathfinding = new(50, 50);
+            PQPathfindingWithHashSet = new(50, 50);
+            //FullTest();
 
-            //PrioityQueueBenchmark benchmark = new PrioityQueueBenchmark();
             BenchmarkRunner.Run<PrioityQueueBenchmark>();
-
-            /*            for (int i = 0; i < 50; i++)
-                            Console.WriteLine(Test(benchmark, Random.Shared.Next(0, 50), Random.Shared.Next(0, 50)));*/
         }
 
-        public static bool Test(PrioityQueueBenchmark benchmark, int x, int y)
+        public static void FullTest()
         {
-            var q = PQPathfinding.FindPath(0, 0, x, y);
-            var n = Pathfinding.FindPath(0, 0, x, y);
+            List<int> xs = [];
+            List<int> ys = [];
+            for (int i = 0; i < 100; i++)
+            {
+                xs.Add(Random.Shared.Next(0, 50));
+                ys.Add(Random.Shared.Next(0, 50));
+            }
 
-            var qJ = JsonSerializer.Serialize(q);
-            var nJ = JsonSerializer.Serialize(n);
-            return qJ == nJ;
+            List<bool> queueResults = [];
+            List<bool> hashSetResults = [];
+            for (int i = 0; i < xs.Count; i++)
+            {
+                queueResults.Add(Test_Queue(xs[i], ys[i]));
+                hashSetResults.Add(Test_HashSet(xs[i], ys[i]));
+            }
+        }
+
+        public static bool Test_Queue(int x, int y)
+        {
+            var queue = PQPathfinding.FindPath(0, 0, x, y);
+            var normal = Pathfinding.FindPath(0, 0, x, y);
+
+            var normalJSON = JsonSerializer.Serialize(normal);
+            var queueJSON = JsonSerializer.Serialize(queue);
+            return queueJSON == normalJSON;
+        }
+
+        public static bool Test_HashSet(int x, int y)
+        {
+            var normal = Pathfinding.FindPath(0, 0, x, y);
+            var queueWithHashset = PQPathfindingWithHashSet.FindPath(0, 0, x, y);
+
+            var normalJSON = JsonSerializer.Serialize(normal);
+            var queueWithHashsetJSON = JsonSerializer.Serialize(queueWithHashset);
+            return queueWithHashsetJSON == normalJSON;
         }
     }
 
@@ -39,13 +67,21 @@ namespace BechmarkingPathfinding
     public class PrioityQueueBenchmark
     {
         PQPathfinding pqPathfinding;
-        Pathfinding pathfinding;
+        PQPathfindingHashset pqPathfindingHashset;
+        //Pathfinding pathfinding;
 
         public PrioityQueueBenchmark()
         {
             pqPathfinding = new(50, 50);
-            pathfinding = new(50, 50);
+            pqPathfindingHashset = new(50, 50);
+            //pathfinding = new(50, 50);
         }
+
+        /*        [Benchmark]
+        public void Normal()
+        {
+            pathfinding.FindPath(0, 0, 44, 40);
+        }*/
 
         [Benchmark]
         public void Queue()
@@ -54,10 +90,16 @@ namespace BechmarkingPathfinding
         }
 
         [Benchmark]
-        public void Normal()
+        public void Queue_WithHashSet()
         {
-            pathfinding.FindPath(0, 0, 44, 40);
+            pqPathfindingHashset.FindPath(0, 0, 44, 40);
         }
+
+        /*        [Benchmark]
+        public void Normal_Random()
+        {
+            pathfinding.FindPath(0, 0, Random.Shared.Next(0, 50), Random.Shared.Next(0, 50));
+        }*/
 
         [Benchmark]
         public void Queue_Random()
@@ -66,14 +108,16 @@ namespace BechmarkingPathfinding
         }
 
         [Benchmark]
-        public void Normal_Random()
+        public void Queue_WithHashSet_Random()
         {
-            pathfinding.FindPath(0, 0, Random.Shared.Next(0, 50), Random.Shared.Next(0, 50));
+            pqPathfindingHashset.FindPath(0, 0, Random.Shared.Next(0, 50), Random.Shared.Next(0, 50));
         }
     }
 }
+
 /*
  *********************************   RESULTS   *********************************
+********************************************************************************
 | Method                | Mean      | Error    | StdDev   | Gen0   | Allocated |
 |---------------------- |----------:|---------:|---------:|-------:|----------:|
 | FindPath_Edge         |  61.39 us | 0.470 us | 0.367 us | 2.3193 |  14.77 KB |
@@ -85,7 +129,7 @@ namespace BechmarkingPathfinding
 ********************************************************************************
 
 After precalculating neighbours
-*****************************   RESULTS   ********************************
+**************************************************************************
 | Method          | Mean      | Error    | StdDev   | Gen0   | Allocated |
 |---------------- |----------:|---------:|---------:|-------:|----------:|
 | FindPath_Edge   |  56.30 us | 1.114 us | 0.987 us | 1.0376 |   6.44 KB |
@@ -95,7 +139,7 @@ After precalculating neighbours
 
 Normal - using iteration for finding the lowest fCost
 Queue - uses PriorityQueue<> for openList and finding the lowest fCost
-****************************   RESULTS   *******************************
+*************************************************************************
 | Method        | Mean      | Error    | StdDev   | Gen0   | Allocated |
 |-------------- |----------:|---------:|---------:|-------:|----------:|
 | Queue         |  66.37 us | 0.905 us | 0.803 us | 1.8311 |  11.41 KB |
@@ -103,4 +147,13 @@ Queue - uses PriorityQueue<> for openList and finding the lowest fCost
 | Queue_Random  | 138.55 us | 2.266 us | 1.892 us | 1.9531 |  12.44 KB |
 | Normal_Random | 309.28 us | 3.781 us | 3.352 us | 0.9766 |    8.3 KB |
 *************************************************************************
- */
+
+| Method                   | Mean      | Error    | StdDev   | Gen0   | Gen1   | Allocated |
+|------------------------- |----------:|---------:|---------:|-------:|-------:|----------:|
+| Queue                    |  67.09 us | 1.305 us | 1.697 us | 1.8311 |      - |  11.41 KB |
+| Queue_WithHashSet        |  32.96 us | 0.506 us | 0.449 us | 2.6855 | 0.0610 |  16.47 KB |
+| Queue_Random             | 139.09 us | 1.741 us | 1.544 us | 1.9531 |      - |  12.69 KB |
+| Queue_WithHashSet_Random |  56.04 us | 0.386 us | 0.322 us | 2.8687 | 0.1221 |  17.63 KB |
+********************************************************************************************
+********************************************************************************************
+*/
