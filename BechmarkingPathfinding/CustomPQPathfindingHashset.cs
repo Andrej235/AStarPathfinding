@@ -6,7 +6,7 @@ namespace BechmarkingPathfinding.PathFinding
         private const int MOVE_STRAIGHT_COST = 10;
         private const int MOVE_DIAGONAL_COST = 14;
 
-        public Priority_Queue.SimplePriorityQueue<PathNode, int> OpenListQueue { get; set; } = new();
+        public Priority_Queue.GenericPriorityQueue<PathNode, int> OpenListQueue { get; set; }
 
         public Grid<PathNode> Grid { get; }
         private HashSet<PathNode> closedList = [];
@@ -14,6 +14,7 @@ namespace BechmarkingPathfinding.PathFinding
         public CustomPQPathfindingHashset(int width, int height)
         {
             Grid = new(width, height, 10, (grid, x, y) => new PathNode(x, y));
+            OpenListQueue = new(width * height);
 
             List<PathNode> GetNeighbourList(PathNode node)
             {
@@ -59,7 +60,7 @@ namespace BechmarkingPathfinding.PathFinding
             PathNode startNode = Grid[startX, startY];
             PathNode endNode = Grid[endX, endY];
 
-            OpenListQueue = new();
+            OpenListQueue.Clear();
             closedList = new();
 
             for (int x = 0; x < Grid.Width; x++)
@@ -70,6 +71,8 @@ namespace BechmarkingPathfinding.PathFinding
                     pathNode.gCost = int.MaxValue;
                     pathNode.CalculateFCost();
                     pathNode.cameFromNode = null;
+
+                    OpenListQueue.ResetNode(pathNode);
                 }
             }
 
@@ -99,7 +102,10 @@ namespace BechmarkingPathfinding.PathFinding
                         neighbourNode.hCost = CalculateDistanceCost(neighbourNode, endNode);
                         neighbourNode.CalculateFCost();
 
-                        OpenListQueue.Enqueue(neighbourNode, neighbourNode.fCost);
+                        if (OpenListQueue.Contains(neighbourNode))
+                            OpenListQueue.UpdatePriority(neighbourNode, neighbourNode.fCost);
+                        else
+                            OpenListQueue.Enqueue(neighbourNode, neighbourNode.fCost);
                     }
                 }
             }
