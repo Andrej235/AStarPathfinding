@@ -127,7 +127,7 @@ namespace BechmarkingPathfinding
             pqPathfinding.FindPath(0, 0, Random.Shared.Next(0, 50), Random.Shared.Next(0, 50));
         }
 
-        [Benchmark]
+        //[Benchmark]
         public void Queue_WithHashSet_Random()
         {
             pqPathfindingHashset.FindPath(0, 0, Random.Shared.Next(0, 50), Random.Shared.Next(0, 50));
@@ -235,4 +235,25 @@ Removed CalculateFCost method from PathNode and made FCost a property which retu
 | Queue_WithHashSet_Random       | 55.457 us | 1.1066 us | 1.1841 us | 2.8076 | 0.1221 |   17847 B |
 | CustomQueue_WithHashSet_Random |  6.871 us | 0.0335 us | 0.0314 us | 0.0076 |      - |      64 B |
 ****************************************************************************************************
+
+StablePriorityQueue after the FCost change
+******************************************************************************************
+| Method                         | Mean     | Error     | StdDev    | Gen0   | Allocated |
+|------------------------------- |---------:|----------:|----------:|-------:|----------:|
+| CustomQueue_WithHashSet_Random | 7.100 us | 0.1238 us | 0.1158 us | 0.0076 |      64 B |
+******************************************************************************************
+
+GenericPriorityQueue after the FCost change
+******************************************************************************************
+| Method                         | Mean     | Error     | StdDev    | Gen0   | Allocated |
+|------------------------------- |---------:|----------:|----------:|-------:|----------:|
+| CustomQueue_WithHashSet_Random | 6.067 us | 0.1171 us | 0.1095 us | 0.0076 |      64 B |
+******************************************************************************************
+
+SimplePriorityQueue after the FCost change
+******************************************************************************************
+| Method                         | Mean     | Error     | StdDev    | Gen0   | Allocated |
+|------------------------------- |---------:|----------:|----------:|-------:|----------:|
+| CustomQueue_WithHashSet_Random | 5.988 us | 0.0484 us | 0.0404 us | 0.0076 |      64 B |
+******************************************************************************************
 */

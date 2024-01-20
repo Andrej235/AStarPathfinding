@@ -2,7 +2,7 @@ using Priority_Queue;
 
 namespace BechmarkingPathfinding.PathFinding
 {
-    public class PathNode : FastPriorityQueueNode
+    public class PathNode : GenericPriorityQueueNode<int>
     {
         public readonly int x;
         public readonly int y;
