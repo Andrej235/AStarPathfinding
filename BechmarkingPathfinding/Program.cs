@@ -208,5 +208,13 @@ CustomQueue_WithHashSet_Random - uses FastPriorityQueue made by BlueRaja >> Stab
 | Queue_WithHashSet_Random       | 57.25 us | 1.140 us | 1.120 us | 2.8687 | 0.1221 |   17.6 KB |
 | CustomQueue_WithHashSet_Random | 60.59 us | 0.541 us | 0.480 us | 1.4648 |      - |   9.42 KB |
 *************************************************************************************************
+
+CustomQueue_WithHashSet_Random - uses StablePriorityQueue made by BlueRaja
+*************************************************************************************************
+| Method                         | Mean     | Error    | StdDev   | Gen0   | Gen1   | Allocated |
+|------------------------------- |---------:|---------:|---------:|-------:|-------:|----------:|
+| Queue_WithHashSet_Random       | 58.15 us | 1.127 us | 1.253 us | 2.8687 | 0.1221 |  17.63 KB |
+| CustomQueue_WithHashSet_Random | 78.06 us | 0.979 us | 0.916 us | 2.1973 | 0.1221 |  13.92 KB |
+*************************************************************************************************
 *************************************************************************************************
 */
