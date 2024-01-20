@@ -6,7 +6,7 @@ namespace BechmarkingPathfinding.PathFinding
         private const int MOVE_STRAIGHT_COST = 10;
         private const int MOVE_DIAGONAL_COST = 14;
 
-        public Priority_Queue.GenericPriorityQueue<PathNode, int> OpenListQueue { get; set; }
+        public Priority_Queue.FastPriorityQueue<PathNode> OpenListQueue { get; set; }
 
         public Grid<PathNode> Grid { get; }
         private HashSet<PathNode> closedList = [];
