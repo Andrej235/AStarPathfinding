@@ -6,6 +6,7 @@ namespace BechmarkingPathfinding.PathFinding
     {
         public readonly int x;
         public readonly int y;
+        public readonly bool isWalkable;
 
         public int gCost;
         public int hCost;
@@ -14,10 +15,11 @@ namespace BechmarkingPathfinding.PathFinding
         public List<PathNode> neighbours;
         public PathNode? cameFromNode;
 
-        public PathNode(int x, int y)
+        public PathNode(int x, int y, bool isWalkable = true)
         {
             this.x = x;
             this.y = y;
+            this.isWalkable = isWalkable;
             neighbours = new();
         }
 

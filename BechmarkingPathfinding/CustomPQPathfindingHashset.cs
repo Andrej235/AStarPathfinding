@@ -13,7 +13,7 @@ namespace BechmarkingPathfinding.PathFinding
 
         public CustomPQPathfindingHashset(int width, int height)
         {
-            Grid = new(width, height, 10, (grid, x, y) => new PathNode(x, y));
+            Grid = new(width, height, 10, (grid, x, y) => new PathNode(x, y, true));
             OpenListQueue = new(width * height);
 
             List<PathNode> GetNeighbourList(PathNode node)
@@ -57,8 +57,11 @@ namespace BechmarkingPathfinding.PathFinding
 
         public List<PathNode>? FindPath(int startX, int startY, int endX, int endY)
         {
-            PathNode startNode = Grid[startX, startY];
-            PathNode endNode = Grid[endX, endY];
+            PathNode? startNode = Grid[startX, startY];
+            PathNode? endNode = Grid[endX, endY];
+
+            if (startNode is null || endNode is null)
+                return null;
 
             OpenListQueue.Clear();
             closedList = new();
@@ -93,6 +96,12 @@ namespace BechmarkingPathfinding.PathFinding
                 {
                     if (closedList.Contains(neighbourNode))
                         continue;
+
+                    if (!neighbourNode.isWalkable)
+                    {
+                        closedList.Add(neighbourNode);
+                        continue;
+                    }
 
                     int tentativeGCost = currentNode.gCost + CalculateDistanceCost(currentNode, neighbourNode); //CalculateDistanceCost returns 10 or 14
                     if (tentativeGCost < neighbourNode.gCost)

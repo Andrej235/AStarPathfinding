@@ -216,5 +216,15 @@ CustomQueue_WithHashSet_Random - uses StablePriorityQueue made by BlueRaja
 | Queue_WithHashSet_Random       | 58.15 us | 1.127 us | 1.253 us | 2.8687 | 0.1221 |  17.63 KB |
 | CustomQueue_WithHashSet_Random | 78.06 us | 0.979 us | 0.916 us | 2.1973 | 0.1221 |  13.92 KB |
 *************************************************************************************************
+
+CustomQueue_WithHashSet_Random - uses FastPriorityQueue made by BlueRaja >> Stable-ish (it works)
+With added support for unwalkable grid cells
+Checks if the start and end nodes actually exist
+*************************************************************************************************
+| Method                         | Mean     | Error    | StdDev   | Gen0   | Gen1   | Allocated |
+|------------------------------- |---------:|---------:|---------:|-------:|-------:|----------:|
+| Queue_WithHashSet_Random       | 57.91 us | 1.123 us | 1.460 us | 2.8076 | 0.1221 |  17.49 KB |
+| CustomQueue_WithHashSet_Random | 61.87 us | 1.209 us | 1.392 us | 1.4648 |      - |   9.36 KB |
+*************************************************************************************************
 *************************************************************************************************
 */

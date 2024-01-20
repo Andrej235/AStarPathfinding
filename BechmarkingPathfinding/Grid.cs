@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 
 public class Grid<T>
 {
@@ -40,7 +41,7 @@ public class Grid<T>
         get
         {
             if (x < 0 || y < 0 || x >= Width || y >= Height)
-                return default;
+                return default!;
 
             return gridArray[x, y];
         }
