@@ -72,7 +72,6 @@ namespace BechmarkingPathfinding.PathFinding
                 {
                     PathNode pathNode = Grid[x, y];
                     pathNode.gCost = int.MaxValue;
-                    pathNode.CalculateFCost();
                     pathNode.cameFromNode = null;
 
                     OpenListQueue.ResetNode(pathNode);
@@ -82,7 +81,6 @@ namespace BechmarkingPathfinding.PathFinding
             startNode.gCost = 0;
             startNode.hCost = CalculateDistanceCost(startNode, endNode);
             startNode.CalculateFCost();
-            OpenListQueue.Enqueue(startNode, startNode.fCost);
 
             while (OpenListQueue.Count > 0)
             {
@@ -109,12 +107,11 @@ namespace BechmarkingPathfinding.PathFinding
                         neighbourNode.cameFromNode = currentNode;
                         neighbourNode.gCost = tentativeGCost;
                         neighbourNode.hCost = CalculateDistanceCost(neighbourNode, endNode);
-                        neighbourNode.CalculateFCost();
 
                         if (OpenListQueue.Contains(neighbourNode))
-                            OpenListQueue.UpdatePriority(neighbourNode, neighbourNode.fCost);
+                            OpenListQueue.UpdatePriority(neighbourNode, neighbourNode.FCost);
                         else
-                            OpenListQueue.Enqueue(neighbourNode, neighbourNode.fCost);
+                            OpenListQueue.Enqueue(neighbourNode, neighbourNode.FCost);
                     }
                 }
             }

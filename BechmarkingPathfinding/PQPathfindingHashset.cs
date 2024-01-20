@@ -75,7 +75,7 @@ namespace BechmarkingPathfinding.PathFinding
             startNode.gCost = 0;
             startNode.hCost = CalculateDistanceCost(startNode, endNode);
             startNode.CalculateFCost();
-            OpenListQueue.Enqueue(startNode, startNode.fCost);
+            OpenListQueue.Enqueue(startNode, startNode.FCost);
 
             while (OpenListQueue.Count > 0)
             {
@@ -98,7 +98,7 @@ namespace BechmarkingPathfinding.PathFinding
                         neighbourNode.hCost = CalculateDistanceCost(neighbourNode, endNode);
                         neighbourNode.CalculateFCost();
 
-                        OpenListQueue.Enqueue(neighbourNode, neighbourNode.fCost);
+                        OpenListQueue.Enqueue(neighbourNode, neighbourNode.FCost);
                     }
                 }
             }

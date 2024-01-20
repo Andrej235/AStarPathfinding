@@ -13,7 +13,7 @@ namespace BechmarkingPathfinding.BST
             if (root != null)
             {
                 Inorder(root.left);
-                Console.Write($"{root.val.fCost}({root.count})\n");
+                Console.Write($"{root.val.FCost}({root.count})\n");
                 Inorder(root.right);
             }
         }
@@ -28,14 +28,14 @@ namespace BechmarkingPathfinding.BST
 
             // If val already exists in BST, 
             // increment count and return
-            if (val.fCost == node.val.fCost)
+            if (val.FCost == node.val.FCost)
             {
                 (node.count)++;
                 return node;
             }
 
             /* Otherwise, recur down the tree */
-            if (val.fCost < node.val.fCost)
+            if (val.FCost < node.val.FCost)
                 node.left = Insert(node.left, val);
             else
                 node.right = Insert(node.right, val);
@@ -69,12 +69,12 @@ namespace BechmarkingPathfinding.BST
 
             // If the val to be deleted is smaller than the
             // root's val, then it lies in left subtree
-            if (val.fCost < root.val.fCost)
+            if (val.FCost < root.val.FCost)
                 root.left = DeleteNode(root.left, val);
 
             // If the val to be deleted is greater than 
             // the root's val, then it lies in right subtree
-            else if (val.fCost > root.val.fCost)
+            else if (val.FCost > root.val.FCost)
                 root.right = DeleteNode(root.right, val);
 
             // if val is same as root's val

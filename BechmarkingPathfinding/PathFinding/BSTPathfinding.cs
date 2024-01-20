@@ -144,7 +144,7 @@ namespace BechmarkingPathfinding.PathFinding
             PathNode lowestFCostNode = pathNodes[0];
             for (int i = 1; i < pathNodes.Count; i++)
             {
-                if (pathNodes[i].fCost < lowestFCostNode.fCost)
+                if (pathNodes[i].FCost < lowestFCostNode.FCost)
                     lowestFCostNode = pathNodes[i];
             }
             return lowestFCostNode;

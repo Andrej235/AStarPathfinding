@@ -226,5 +226,13 @@ Checks if the start and end nodes actually exist
 | Queue_WithHashSet_Random       | 57.91 us | 1.123 us | 1.460 us | 2.8076 | 0.1221 |  17.49 KB |
 | CustomQueue_WithHashSet_Random | 61.87 us | 1.209 us | 1.392 us | 1.4648 |      - |   9.36 KB |
 *************************************************************************************************
-*************************************************************************************************
+
+CustomQueue_WithHashSet_Random - uses FastPriorityQueue made by BlueRaja >> Stable-ish (it works)
+Removed CalculateFCost method from PathNode and made FCost a property which returns gCost + hCost
+****************************************************************************************************
+| Method                         | Mean      | Error     | StdDev    | Gen0   | Gen1   | Allocated |
+|------------------------------- |----------:|----------:|----------:|-------:|-------:|----------:|
+| Queue_WithHashSet_Random       | 55.457 us | 1.1066 us | 1.1841 us | 2.8076 | 0.1221 |   17847 B |
+| CustomQueue_WithHashSet_Random |  6.871 us | 0.0335 us | 0.0314 us | 0.0076 |      - |      64 B |
+****************************************************************************************************
 */
