@@ -1,3 +1,5 @@
+using Priority_Queue;
+
 namespace BechmarkingPathfinding.PathFinding
 {
     public class PathNode

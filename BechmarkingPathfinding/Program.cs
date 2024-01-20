@@ -12,12 +12,14 @@ namespace BechmarkingPathfinding
         public static Pathfinding Pathfinding { get; set; } = null!;
         public static PQPathfinding PQPathfinding { get; set; } = null!;
         public static PQPathfindingHashset PQPathfindingWithHashSet { get; set; } = null!;
+        public static CustomPQPathfindingHashset CustomPQPathfindingWithHashSet { get; set; } = null!;
 
         static void Main()
         {
             PQPathfinding = new(50, 50);
             Pathfinding = new(50, 50);
             PQPathfindingWithHashSet = new(50, 50);
+            CustomPQPathfindingWithHashSet = new(50, 50);
             //FullTest();
 
             BenchmarkRunner.Run<PrioityQueueBenchmark>();
@@ -35,14 +37,27 @@ namespace BechmarkingPathfinding
 
             List<bool> queueResults = [];
             List<bool> hashSetResults = [];
+            List<bool> customPQResults = [];
             for (int i = 0; i < xs.Count; i++)
             {
                 queueResults.Add(Test_Queue(xs[i], ys[i]));
                 hashSetResults.Add(Test_HashSet(xs[i], ys[i]));
+                customPQResults.Add(Test_CustomPQ(xs[i], ys[i]));
             }
 
             Console.WriteLine("Queue " + (!queueResults.Contains(false) ? "worked" : $"failed ({queueResults.Where(x => !x).Count()})"));
             Console.WriteLine("Queue with HashSet " + (!hashSetResults.Contains(false) ? "worked" : $"failed ({hashSetResults.Where(x => !x).Count()})"));
+            Console.WriteLine("Custom queue with HashSet " + (!customPQResults.Contains(false) ? "worked" : $"failed ({customPQResults.Where(x => !x).Count()})"));
+        }
+
+        private static bool Test_CustomPQ(int x, int y)
+        {
+            var queue = CustomPQPathfindingWithHashSet.FindPath(0, 0, x, y);
+            var normal = Pathfinding.FindPath(0, 0, x, y);
+
+            var normalJSON = JsonSerializer.Serialize(normal);
+            var queueJSON = JsonSerializer.Serialize(queue);
+            return queueJSON == normalJSON;
         }
 
         public static bool Test_Queue(int x, int y)
@@ -71,12 +86,14 @@ namespace BechmarkingPathfinding
     {
         PQPathfinding pqPathfinding;
         PQPathfindingHashset pqPathfindingHashset;
+        CustomPQPathfindingHashset customPQPathfindingWithHashSet;
         //Pathfinding pathfinding;
 
         public PrioityQueueBenchmark()
         {
             pqPathfinding = new(50, 50);
             pqPathfindingHashset = new(50, 50);
+            customPQPathfindingWithHashSet = new(50, 50);
             //pathfinding = new(50, 50);
         }
 
@@ -86,13 +103,13 @@ namespace BechmarkingPathfinding
             pathfinding.FindPath(0, 0, 44, 40);
         }*/
 
-        [Benchmark]
+        //[Benchmark]
         public void Queue()
         {
             pqPathfinding.FindPath(0, 0, 44, 40);
         }
 
-        [Benchmark]
+        //[Benchmark]
         public void Queue_WithHashSet()
         {
             pqPathfindingHashset.FindPath(0, 0, 44, 40);
@@ -104,7 +121,7 @@ namespace BechmarkingPathfinding
             pathfinding.FindPath(0, 0, Random.Shared.Next(0, 50), Random.Shared.Next(0, 50));
         }*/
 
-        [Benchmark]
+        //[Benchmark]
         public void Queue_Random()
         {
             pqPathfinding.FindPath(0, 0, Random.Shared.Next(0, 50), Random.Shared.Next(0, 50));
@@ -114,6 +131,12 @@ namespace BechmarkingPathfinding
         public void Queue_WithHashSet_Random()
         {
             pqPathfindingHashset.FindPath(0, 0, Random.Shared.Next(0, 50), Random.Shared.Next(0, 50));
+        }
+
+        [Benchmark]
+        public void CustomQueue_WithHashSet_Random()
+        {
+            customPQPathfindingWithHashSet.FindPath(0, 0, Random.Shared.Next(0, 50), Random.Shared.Next(0, 50));
         }
     }
 }
@@ -161,5 +184,13 @@ Queue_WithHashSet - Queue + uses HasSet<> for closedList
 | Queue_Random             | 139.09 us | 1.741 us | 1.544 us | 1.9531 |      - |  12.69 KB |
 | Queue_WithHashSet_Random |  56.04 us | 0.386 us | 0.322 us | 2.8687 | 0.1221 |  17.63 KB |
 ********************************************************************************************
-********************************************************************************************
+
+CustomQueue_WithHashSet_Random - uses SimplePriorityQueue made by BlueRaja
+***************************************************************************************************
+| Method                         | Mean      | Error    | StdDev   | Gen0    | Gen1   | Allocated |
+|------------------------------- |----------:|---------:|---------:|--------:|-------:|----------:|
+| Queue_WithHashSet_Random       |  57.30 us | 1.072 us | 1.101 us |  2.8687 | 0.1221 |  17.58 KB |
+| CustomQueue_WithHashSet_Random | 129.52 us | 1.483 us | 1.239 us | 12.2070 | 1.9531 |  75.81 KB |
+***************************************************************************************************
+***************************************************************************************************
 */
